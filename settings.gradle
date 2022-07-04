@@ -1,6 +1,6 @@
-rootProject.name = 'test-kotlin-gradle'
+rootProject.name = 'diktat-demo'
 
-include 'test-api'
-include 'test-cli'
-include 'test-common'
-include 'test-core'
+include 'demo-api'
+include 'demo-cli'
+include 'demo-common'
+include 'demo-core'
