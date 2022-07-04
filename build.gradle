@@ -1,5 +1,3 @@
-import org.cqfn.diktat.plugin.gradle.DiktatJavaExecTaskBase
-
 buildscript {
     repositories {
         mavenCentral()
@@ -8,68 +6,5 @@ buildscript {
     dependencies {
         classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: kotlin_version
         classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: diktat_version
-    }
-}
-
-subprojects {
-    apply plugin: 'kotlin'
-    apply plugin: 'org.cqfn.diktat.diktat-gradle-plugin'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    }
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    diktat {
-        inputs {
-            it.include("src/**/*.kt", "*.kts", "src/**/*.kts")
-            it.exclude("build/**")
-        }
-
-        def sarifOutput = Boolean.parseBoolean(project.findProperty("diktat.githubActions"))
-
-        /*
-         * One of: "html", "json", "plain" (default), "sarif".
-         *
-         * Run "gradlew --continue diktatCheck -Pdiktat.githubActions=true"
-         * to get a SARIF output.
-         */
-        reporter = sarifOutput ? "sarif" : "plain"
-
-        /*
-         * If `output` is empty, reports will be written to stdout.
-         */
-        output = sarifOutput ? "build/reports/diktat/diktat.sarif" : ""
-
-        /*
-         * You can configure `reporter` and `output` independently, or you can
-         * set the `githubActions` flag which, if `true`, will do exactly the
-         * same as above.
-         */
-        githubActions = false
-
-        debug = false
-    }
-
-    /*
-     * A workaround for <https://github.com/saveourtool/diktat/issues/1269>.
-     */
-    tasks.withType(DiktatJavaExecTaskBase).configureEach {
-        systemProperty("user.home", rootDir.toString())
     }
 }
