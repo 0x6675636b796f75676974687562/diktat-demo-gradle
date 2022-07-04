@@ -1,0 +1,6 @@
+rootProject.name = 'test-kotlin-gradle'
+
+include 'test-api'
+include 'test-cli'
+include 'test-common'
+include 'test-core'
