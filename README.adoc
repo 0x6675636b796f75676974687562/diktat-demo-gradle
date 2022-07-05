@@ -1,0 +1,86 @@
+This is a template _Gradle_ project (_Groovy_ DSL flavour) which uses
+https://github.com/saveourtool/diktat[_DiKTat_] to check the style of your code.
+
+If your project has multiple modules, be sure to pass the
+https://docs.gradle.org/current/userguide/command_line_interface.html#sec:continue_build_on_failure[`--continue`]
+flag to _Gradle_:
+
+[source,shell]
+----
+./gradlew --continue diktatCheck
+----
+
+Here's a sample _DiKTat_ configuration. Depending on whether you pass the
+`-Pdiktat.githubActions=true` property to _Gradle_, the output will be written
+either in plain text format to the standard output, or in the
+https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning#about-sarif-support[SARIF]
+format to a report file:
+
+[source,groovy]
+----
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.1
+    }
+}
+
+apply plugin: 'org.cqfn.diktat.diktat-gradle-plugin'
+
+diktat {
+    inputs {
+        it.include("src/**/*.kt", "*.kts", "src/**/*.kts")
+        it.exclude("build/**")
+    }
+
+    def sarifOutput = Boolean.parseBoolean(project.findProperty("diktat.githubActions"))
+
+    reporter = sarifOutput ? "sarif" : "plain"
+
+    output = sarifOutput ? "build/reports/diktat/diktat.sarif" : ""
+
+    debug = false
+}
+----
+
+`reporter` can be one of:
+
+ * `html`,
+ * `json`,
+ * `plain` (the default), and
+ * `sarif`.
+
+If the `output` field is empty, reports will be written to the standard output.
+
+While it's possible to configure `reporter` and `output` independently, you may
+consider using the `githubActions` flag instead. This configuration is
+effectively equivalent to the one above:
+
+[source,groovy]
+----
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.1
+    }
+}
+
+apply plugin: 'org.cqfn.diktat.diktat-gradle-plugin'
+
+diktat {
+    inputs {
+        it.include("src/**/*.kt", "*.kts", "src/**/*.kts")
+        it.exclude("build/**")
+    }
+
+    githubActions = Boolean.parseBoolean(project.findProperty("diktat.githubActions"))
+
+    debug = false
+}
+----
