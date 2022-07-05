@@ -84,3 +84,71 @@ diktat {
     debug = false
 }
 ----
+
+You can integrate with https://docs.github.com/en/actions[_GitHub Actions_] and
+make code scanning results (e.g.: after a pull request) immediately available by
+adding a YAML file of the following content under `.github/workflows` (uses
+https://github.com/github/codeql-action[github/codeql-action/upload-sarif@v2]):
+
+[source,yaml]
+----
+name: Run diKTat
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  diktat_check:
+    runs-on: ubuntu-20.04
+
+    permissions:
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+          java-package: jdk+fx
+          cache: gradle
+      - uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: wrapper
+          arguments: |
+            --continue
+            diktatCheck
+            -Pdiktat.githubActions=true
+      - name: Copy SARIF reports into a single directory
+        if: ${{ always() }}
+        run: |
+          mkdir -p build/diktat-sarif-reports
+          i=0
+          find -path '*/build/reports/diktat/*.sarif' | while read -r f; do cp "$f" "build/diktat-sarif-reports/diktat-$((i++)).sarif"; done
+      - name: Upload SARIF reports to GitHub
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: build/diktat-sarif-reports
+----
+
+The shell script fragment:
+
+[source,shell]
+----
+mkdir -p build/diktat-sarif-reports
+i=0
+find -path '*/build/reports/diktat/*.sarif' | while read -r f; \
+do \
+    cp "$f" "build/diktat-sarif-reports/diktat-$((i++)).sarif"; \
+done
+----
+
+-- merely copies all the generated SARIF reports into a single directory, so
+that they can be read by _GitHub_.
