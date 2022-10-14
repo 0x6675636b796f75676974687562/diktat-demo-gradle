@@ -1,19 +1,19 @@
 # Common configuration
 - name: DIKTAT_COMMON
+  enabled: true
   configuration:
     # put your package name here - it will be autofixed and checked
-    domainName: your.name.here
-    testDirs: test
+    domainName: com.example
+    # can also use chapter names here (not only numbers)
     # expected values:  disabledChapters: "Naming, Comments, General, Variables, Functions, Classes"
     # or: "1, 2, 3, 4, 5, 6"
     disabledChapters: ""
+    testDirs: test
     kotlinVersion: 1.7
     srcDirectories: "main"
 # Checks that the Class/Enum/Interface name matches Pascal case
 - name: CLASS_NAME_INCORRECT
   enabled: true
-  # all code blocks with MyAnnotation will be ignored and not checked
-  ignoreAnnotated: [ MyAnnotation ]
 # Checks that CONSTANT (treated as const val from companion object or class level) is in non UPPER_SNAKE_CASE
 - name: CONSTANT_UPPERCASE
   enabled: true
@@ -40,9 +40,6 @@
 # Checks that function/method name is in lowerCamelCase
 - name: FUNCTION_NAME_INCORRECT_CASE
   enabled: true
-# Checks that typealias name is in PascalCase
-- name: TYPEALIAS_NAME_INCORRECT_CASE
-  enabled: true
 # Checks that generic name doesn't contain more than 1 letter (capital). It can be followed by numbers, example: T12, T
 - name: GENERIC_NAME
   enabled: true
@@ -57,13 +54,13 @@
   enabled: true
 # Checks that package name starts with the company's domain
 - name: PACKAGE_NAME_INCORRECT_PREFIX
-  enabled: false
+  enabled: true
 # Checks that package name does not have incorrect symbols like underscore or non-ASCII letters/digits
 - name: PACKAGE_NAME_INCORRECT_SYMBOLS
   enabled: true
 # Checks that the path for a file matches with a package name
 - name: PACKAGE_NAME_INCORRECT_PATH
-  enabled: false
+  enabled: true
 # Checks that package name is in the file
 - name: PACKAGE_NAME_MISSING
   enabled: true
@@ -175,7 +172,8 @@
 - name: FILE_WILDCARD_IMPORTS
   enabled: true
   configuration:
-    allowedWildcards: "" # Allowed wildcards for imports (e.g. "import org.cqfn.diktat.*, import org.jetbrains.kotlin.*")
+    # Allowed wildcards for imports (e.g. "import org.jetbrains.kotlin.*")
+    allowedWildcards: ""
     useRecommendedImportsOrder: true
 # Checks unused imports
 - name: UNUSED_IMPORT
@@ -210,8 +208,16 @@
     extendedIndentOfParameters: false
     # If true: if first parameter in parameter list is on the same line as opening parenthesis, then other parameters can be aligned with it
     alignedParameters: true
+    # If true, expression bodies which begin on a separate line are indented
+    # using a continuation indent. The default is false.
+    #
+    # This flag is called CONTINUATION_INDENT_FOR_EXPRESSION_BODIES in IDEA and
+    # ij_kotlin_continuation_indent_for_expression_bodies in .editorconfig.
+    extendedIndentForExpressionBodies: false
     # If true: if expression is split by newline after operator like +/-/`*`, then the next line is indented with two indentations instead of one
-    extendedIndentAfterOperators: false
+    extendedIndentAfterOperators: true
+    # If true: when dot qualified expression starts on a new line, this line will be indented with two indentations instead of one
+    extendedIndentBeforeDot: false
     # The indentation size for each file
     indentationSize: 4
 # Checks that there is no empty blocks in a file.
@@ -229,7 +235,7 @@
 - name: LONG_LINE
   enabled: true
   configuration:
-    lineLength: '120'
+    lineLength: 120
 # Checks that semicolons are not used at the end of a line
 - name: REDUNDANT_SEMICOLON
   enabled: true
@@ -282,6 +288,9 @@
 # Checks that backticks (``) are not used in the identifier name, except the case when it is test method (marked with @Test annotation)
 - name: BACKTICKS_PROHIBITED
   enabled: true
+  # all code blocks annotated with  @Nested, @ParameterizedTest (JUnit 5) will
+  # be ignored and not checked.
+  ignoreAnnotated: [ Nested, ParameterizedTest ]
 # Checks that a single line concatenation of strings is not used
 - name: STRING_CONCATENATION
   enabled: true
@@ -316,6 +325,8 @@
     ignorePropertyDeclaration: "false"
     # Is ignore local variable
     ignoreLocalVariableDeclaration: "false"
+    # Is ignore value parameter
+    ignoreValueParameter: "true"
     # Is ignore constant
     ignoreConstantDeclaration: "true"
     # Is ignore property in companion object
@@ -398,8 +409,8 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: '30' # max length of function
-    isIncludeHeader: 'false' # count function's header
+    maxFunctionLength: 30 # max length of function
+    isIncludeHeader: false # count function's header
 # Warns if there are nested functions
 - name: AVOID_NESTED_FUNCTIONS
   enabled: true
