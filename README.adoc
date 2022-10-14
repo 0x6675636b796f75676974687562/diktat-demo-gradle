@@ -24,7 +24,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.1
+        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.3
     }
 }
 
@@ -67,7 +67,7 @@ buildscript {
     }
 
     dependencies {
-        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.1
+        classpath group: 'org.cqfn.diktat', name: 'diktat-gradle-plugin', version: 1.2.3
     }
 }
 
